@@ -1,0 +1,1 @@
+void rmCComments(char *, int);

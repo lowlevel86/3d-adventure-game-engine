@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+</HEAD>
+<BODY>
+
+This game engine is mostly source code that when compiled creates a game. It is a template that can be morphed into what you want.<BR>
+<BR>
+Tools you will need...<BR>
+<BR>
+<B>For Windows:</B><BR>
+dev-c++<BR>
+<BR>
+<B>For Linux:</B><BR>
+wine - windows emulator<BR>
+mingw32 - Minimalist GNU win32 (cross) compiler<BR>
+<BR>
+<BR>
+Lets start off by compiling the source code which creates the game. We will compile the source code then change something within the code and recompile.<BR>
+<BR>
+<B>For Windows:</B><BR>
+Double click game Dev-C++ Project File.<BR>
+Go to Execute then Compile.<BR>
+This will compile the source code using the instructions in Makefile.win
+<BR><BR>
+<B>For Linux:</B><BR>
+Get a terminal with the working directory.<BR>
+Change permissions of getTerm.sh to allow execution and double click it.<BR>
+OR<BR>
+Open a terminal and cd to the directory.<BR>
+$ cd <BR>
+Type "make" in the terminal and push enter. (make sure you have make)<BR>
+$ make<BR>
+This will compile the source code using the instructions in the file makefile.<BR>
+If the code was already compiled and it needs to be recompile use "make clean" then make.<BR>
+$ make clean<BR>
+$ make<BR>
+
+<BR><BR>
+Now lets change the starting position of the character in level 1 and recompile.<BR>
+Open the file scene1.c and find where it says "// starting position" and just below it change yCharacterPosSave = 0; to yCharacterPosSave = 500;<BR>
+<BR>
+Now lets recompile.<BR>
+<BR>
+<B>For Windows:</B><BR>
+Double click getTerm.bat.<BR>
+Type "makeScenes" in the terminal and push enter.<BR>
+&gt; makeScenes<BR>
+This is a faster way of compiling than using the Dev-C++ user interface but you can use either way.<BR>
+If you want to use Dev-C++ go to Execute then Rebuild All.
+<BR><BR>
+<B>For Linux:</B><BR>
+Type "./makeScenes.sh" in the terminal and push enter. (make sure permissions allow execution)<BR>
+$ ./makeScenes.sh<BR>
+The reason you type "./makeScenes.sh" instead of "make" is because make won't know that scene1.c has changed sense it is not in the makefile. scene0.c scene1.c scene2.c scene3.c are all not in the makefile and are compiled only when main.c is compiled because they are apart of main.c just in separate files.
+<BR><BR>
+<A HREF="Game_Code_Overview.html">Game Code Overview</A><BR>
+<BR>
+<A HREF="Little_HowTos.html">Little HowTos</A></BODY>
+</HTML>

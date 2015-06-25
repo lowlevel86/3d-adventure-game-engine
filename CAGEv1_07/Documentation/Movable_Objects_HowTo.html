@@ -1,0 +1,357 @@
+<HTML>
+<HEAD>
+<TITLE>Movable Objects HowTo</TITLE>
+</HEAD>
+<BODY>
+
+Movable Objects HowTo<BR>
+<BR>
+This howto will show how you can make the character lift and drop objects.<BR>
+<HR><HR>
+Add the "objects" meshes to the game.<BR>
+<BR>
+In the meshes directory there should be an "objects.c" file.<BR>
+Add objects.c to the makefile...<BR>
+<BR>
+<B>For Windows:</B><BR>
+Double click game Dev-C++ Project File and add the files "objects.c" and "objects.h" to the project.<BR>
+<BR>
+<B>For Linux:</B><BR>
+Open "Makefile".<BR>
+Add this near the bottom of the makefile:<BR>
+meshes/objects.o: meshes/objects.c<BR>
+//TAB// $(CC) -c meshes/objects.c -o meshes/objects.o $(CFLAGS)<BR>
+<BR>
+Replace //TAB// with a tab.<BR>
+<BR>
+Add this to "OBJ =" within the makefile:<BR>
+meshes/objects.o<BR>
+<BR>
+Add objects.c to the source code...<BR>
+<BR>
+Add this near the top of main.c:<BR>
+#include "meshes/objects.h"<BR>
+<BR>
+Open "scene1.c".<BR>
+Add this under "if (initializeDrawScene1) {":<BR>
+// resize the objects<BR>
+globalResize(objects_GLOBAL, objects_TRANS, objects_MESHCNT, 0, 0, 0, 20, 20, 20);<BR>
+<BR>
+for (i = 0; i &lt; 9; i++)<BR>
+objects_STATICGLOBAL[i] = objects_GLOBAL[i];<BR>
+for (i = 0; i &lt; sizeof(objects_TRANS)/sizeof(float); i++)<BR>
+objects_STATICTRANS[i] = objects_TRANS[i];<BR>
+for (i = 0; i &lt; sizeof(objects_POINT)/sizeof(float); i++)<BR>
+objects_STATICPOINT[i] = objects_POINT[i];<BR>
+<BR>
+Add this at the end of "scene1.c":<BR>
+// draw objects<BR>
+addRotLocSz(objects_TRANS, objects_POINT, objects_POINTDATSZ,<BR>
+objects_STATICPOINT, objects_MESHCNT);<BR>
+addScreenRotLocSz(xScreenRot, yScreenRot, zScreenRot,<BR>
+xScreenSize, yScreenSize, zScreenSize,<BR>
+xScreenLoc, yScreenLoc, zScreenLoc,<BR>
+objects_POINT, objects_POINTDATSZ, objects_MESHCNT);<BR>
+drawMesh(objects_POINT, objects_LINE, objects_COLOR,<BR>
+objects_LINEDATSZ, objects_MESHCNT, bgColor, antialiasing, rI);<BR>
+<BR>
+Compile and run...<BR>
+<HR>
+<BR>
+<BR>
+To place the objects somewhere in the environment.<BR>
+<BR>
+Add needed variables to the code.<BR>
+Find this in "main.c":<BR>
+if (sceneNumber == 0)<BR>
+Add this above it:<BR>
+static float movableObjTRANS[sizeof(objects_TRANS)];<BR>
+static int objTimeToFall[sizeof(objects_TRANS)];<BR>
+static float objFallSpeed[sizeof(objects_TRANS)];<BR>
+static int liftedObjNum = -1;<BR>
+static int droppedObj = 0;<BR>
+float objCarriedxRot;<BR>
+float objCarriedyRot;<BR>
+float objCarriedzRot;<BR>
+<BR>
+In "scene1.c" add this under "if (resetDrawScene) {":<BR>
+// place objects<BR>
+for (i = 0; i &lt; sizeof(objects_TRANS)/sizeof(float); i++)<BR>
+{<BR>
+movableObjTRANS[i] = objects_STATICTRANS[i];<BR>
+}<BR>
+<BR>
+Find this in "scene1.c":<BR>
+// return global and transformation data back to its original state<BR>
+// this will keep rounding errors from deforming the meshes<BR>
+Add this right after:<BR>
+for (i = 0; i &lt; 9; i++)<BR>
+objects_GLOBAL[i] = objects_STATICGLOBAL[i];<BR>
+for (i = 0; i &lt; sizeof(objects_TRANS)/sizeof(float); i++)<BR>
+objects_TRANS[i] = objects_STATICTRANS[i];<BR>
+<BR>
+Add this right after "// apply the correct orientations":<BR>
+// put the objects in the right position<BR>
+for (i = 0; i &lt; sizeof(objects_TRANS)/sizeof(float); i++)<BR>
+objects_TRANS[i] = movableObjTRANS[i];<BR>
+// keep the objects with the course<BR>
+globalRot(objects_GLOBAL, objects_TRANS, objects_MESHCNT, 0, 0, 0, 0, 0, zCourseRotSave);<BR>
+globalMove(objects_GLOBAL, objects_TRANS, objects_MESHCNT,<BR>
+-xCharacterPosSave, -yCharacterPosSave, -zCharacterPosSave);<BR>
+globalMove(objects_GLOBAL, objects_TRANS, objects_MESHCNT, 0, -(forward+backward), 0);<BR>
+globalRot(objects_GLOBAL, objects_TRANS, objects_MESHCNT, 0, 0, 0, 0, 0, (turnLeft+turnRight));<BR>
+<BR>
+Find:<BR>
+// If the character falls or jumps this changes the z<BR>
+// position of the course and if you have objects placed on<BR>
+// the course this is the place to change the z positions<BR>
+// of those objects to keep them with the course.<BR>
+Add this right after:<BR>
+// put the objects at there right heights<BR>
+for (i = 0; i &lt; objects_MESHCNT*9; i=i+9)<BR>
+objects_TRANS[5+i] = course1_GLOBAL[5] + movableObjTRANS[5+i];<BR>
+<BR>
+Compile and run...<BR>
+<HR>
+<BR>
+<BR>
+Allow the objects to be lifted and moved.<BR>
+<BR>
+Add a key press event for when you press "Z".<BR>
+In "main.c".<BR>
+Find:<BR>
+// Input Events //<BR>
+Add this right after:<BR>
+static int liftDropObj = 0;<BR>
+static int objLifted = 0;<BR>
+// left or put down an object<BR>
+if (keyDown[90])// z<BR>
+{<BR>
+if (liftDropObj == 0)<BR>
+objLifted = !objLifted;<BR>
+liftDropObj = 1;<BR>
+}<BR>
+if (keyUp[90])// z<BR>
+liftDropObj = 0;<BR>
+<BR>
+Allow objects to be lifted.<BR>
+In "scene1.c".<BR>
+Find where this was added:<BR>
+// put the objects in there right positions<BR>
+for (i = 0; i &lt; sizeof(objects_TRANS)/sizeof(float); i++)<BR>
+objects_TRANS[i] = movableObjTRANS[i];<BR>
+Add this under it:<BR>
+objCarriedxRot = objects_TRANS[0];<BR>
+objCarriedyRot = objects_TRANS[1];<BR>
+objCarriedzRot = objects_TRANS[2];<BR>
+float xObjPos;<BR>
+float yObjPos;<BR>
+float zObjPos;<BR>
+<BR>
+Find where this was added:<BR>
+// place objects<BR>
+for (i = 0; i &lt; sizeof(objects_TRANS)/sizeof(float); i++)<BR>
+{<BR>
+movableObjTRANS[i] = objects_STATICTRANS[i];<BR>
+}<BR>
+Add this under it:<BR>
+objLifted = 0;<BR>
+liftedObjNum = -1;<BR>
+<BR>
+Find where this was added:<BR>
+// put the objects at there right heights<BR>
+for (i = 0; i &lt; objects_MESHCNT*9; i=i+9)<BR>
+objects_TRANS[5+i] = course1_GLOBAL[5] + movableObjTRANS[5+i];<BR>
+Add this right after:<BR>
+// put the lifted object in its right position<BR>
+if (liftedObjNum != -1)<BR>
+{<BR>
+objects_TRANS[0+liftedObjNum*9] = objCarriedxRot;<BR>
+objects_TRANS[1+liftedObjNum*9] = objCarriedyRot;<BR>
+objects_TRANS[2+liftedObjNum*9] = objCarriedzRot;<BR>
+<BR>
+objects_TRANS[3+liftedObjNum*9] = character_TRANS[3];<BR>
+objects_TRANS[4+liftedObjNum*9] = character_TRANS[4] + 25;<BR>
+objects_TRANS[5+liftedObjNum*9] = character_TRANS[5] + 20;<BR>
+<BR>
+localRot(objects_TRANS, liftedObjNum, 0, 0, 0, 0, 0, zCharacterRot);<BR>
+objects_TRANS[2+liftedObjNum*9] = character_TRANS[2];<BR>
+<BR>
+// rotate the movable object to 0<BR>
+movableObjTRANS[0+liftedObjNum*9] = 0;<BR>
+movableObjTRANS[1+liftedObjNum*9] = 0;<BR>
+movableObjTRANS[2+liftedObjNum*9] = 0;<BR>
+}<BR>
+<BR>
+if (liftedObjNum == -1)<BR>
+for (i=0; i &lt; objects_MESHCNT*9; i=i+9)<BR>
+{<BR>
+   // is the object at the right height for lifting<BR>
+   if (movableObjTRANS[5+i]-movableObjTRANS[8+i]/2 &gt;= -course1_GLOBAL[5]-10 - 16)<BR>
+   if (movableObjTRANS[5+i]-movableObjTRANS[8+i]/2 &lt;= -course1_GLOBAL[5]-10 + 16)<BR>
+   {<BR>
+      if (objLifted)<BR>
+      // is the charactor in the right position to lift the object<BR>
+      if (movableObjTRANS[4+i]-movableObjTRANS[7+i]-20 &lt;= -course1_GLOBAL[4])<BR>
+      if (movableObjTRANS[4+i]+movableObjTRANS[7+i]+20 &gt;= -course1_GLOBAL[4])<BR>
+      if (movableObjTRANS[3+i]-movableObjTRANS[6+i]-20 &lt;= -course1_GLOBAL[3])<BR>
+      if (movableObjTRANS[3+i]+movableObjTRANS[6+i]+20 &gt;= -course1_GLOBAL[3])<BR>
+      {<BR>
+         liftedObjNum = i / 9;<BR>
+         i = objects_MESHCNT*9;<BR>
+      }<BR>
+   }<BR>
+}<BR>
+<BR>
+Compile and run...<BR>
+<HR>
+<BR>
+<BR>
+Allow objects to be dropped.<BR>
+<BR>
+Find:<BR>
+// place objects<BR>
+for (i = 0; i &lt; sizeof(objects_TRANS)/sizeof(float); i++)<BR>
+{<BR>
+Add this right under (within the for loop):<BR>
+objTimeToFall[i] = 0;<BR>
+objFallSpeed[i] = 0;<BR>
+<BR>
+<BR>
+<BR>
+Find:<BR>
+// keep the dome's z position with the course<BR>
+Add this above it:<BR>
+<BR>
+// move the objects far down out of view<BR>
+// if they fall past a certain point<BR>
+for (i = 0; i &lt; objects_MESHCNT*9; i=i+9)<BR>
+if (objects_TRANS[5+i] &lt; -100000)<BR>
+objects_TRANS[5+i] = -1000000;<BR>
+<BR>
+// get the position of the dropped object<BR>
+if (objLifted == 0)<BR>
+{<BR>
+if (liftedObjNum != -1)<BR>
+{<BR>
+droppedObj = 1;<BR>
+movableObjTRANS[3+liftedObjNum*9] = -course1_GLOBAL[3];<BR>
+movableObjTRANS[4+liftedObjNum*9] = -course1_GLOBAL[4] + 30;<BR>
+movableObjTRANS[5+liftedObjNum*9] = -course1_GLOBAL[5] + 20;<BR>
+<BR>
+localRot(movableObjTRANS, liftedObjNum,<BR>
+-course1_GLOBAL[3], -course1_GLOBAL[4], 0, 0, 0, -zCourseRotSave+(turnLeft+turnRight));<BR>
+<BR>
+localRot(movableObjTRANS, liftedObjNum,<BR>
+-course1_GLOBAL[3], -course1_GLOBAL[4], 0, 0, 0, zCharacterRot);<BR>
+}<BR>
+<BR>
+liftedObjNum = -1;<BR>
+}<BR>
+<BR>
+// make "objLifted" variable false which was triggered by keydown event<BR>
+// if no object was lifted<BR>
+if (liftedObjNum == -1)<BR>
+objLifted = 0;<BR>
+<BR>
+for (i = 0; i &lt; objects_MESHCNT; i++)<BR>
+{<BR>
+if (objTimeToFall[i])<BR>
+{<BR>
+objFallSpeed[i] = objFallSpeed[i] + 15;<BR>
+localMove(objects_TRANS, i, 0, 0, -objFallSpeed[i]);<BR>
+localMove(movableObjTRANS, i, 0, 0, -objFallSpeed[i]);<BR>
+}<BR>
+<BR>
+if (i != liftedObjNum)<BR>
+objTimeToFall[i] = 1;<BR>
+}<BR>
+<BR>
+int j;<BR>
+for (j = 0; j &lt; objects_MESHCNT*9; j=j+9)<BR>
+{<BR>
+// Get the object's position relative to the position of the course.<BR>
+xObjPos = course1_GLOBAL[3] + movableObjTRANS[3+j];<BR>
+yObjPos = course1_GLOBAL[4] + movableObjTRANS[4+j];<BR>
+zObjPos = course1_GLOBAL[5] + movableObjTRANS[5+j] - movableObjTRANS[8+j];<BR>
+<BR>
+// keep the object from falling through platforms<BR>
+for (i = 0; i &lt; course1_MESHCNT*9; i=i+9)<BR>
+{<BR>
+xPlatform = course1_TRANS[3+i];<BR>
+yPlatform = course1_TRANS[4+i];<BR>
+zPlatform = course1_TRANS[5+i];<BR>
+xEdge = course1_TRANS[6+i];<BR>
+yEdge = course1_TRANS[7+i];<BR>
+<BR>
+// if the object is within the platform's boundaries<BR>
+if ((xObjPos &lt;= xPlatform+xEdge) &&<BR>
+(xObjPos &gt;= xPlatform-xEdge) &&<BR>
+(yObjPos &lt;= yPlatform+yEdge) &&<BR>
+(yObjPos &gt;= yPlatform-yEdge))<BR>
+{<BR>
+if (zObjPos+2.0 &gt;= zPlatform)<BR>
+if (zObjPos-10.0 &lt;= zPlatform+objFallSpeed[j/9])<BR>
+{<BR>
+floorToChrAmt = zPlatform - zObjPos;<BR>
+// move the object up<BR>
+localMove(objects_TRANS, j/9, 0, 0, floorToChrAmt);<BR>
+localMove(movableObjTRANS, j/9, 0, 0, floorToChrAmt);<BR>
+<BR>
+objTimeToFall[j/9] = 0;<BR>
+objFallSpeed[j/9] = 0;<BR>
+}<BR>
+}<BR>
+}<BR>
+}<BR>
+<BR>
+Compile and run...<BR>
+<HR>
+<BR>
+<BR>
+Lift arms when carrying objects.<BR>
+<BR>
+Find:<BR>
+// turn the character toward the correct direction<BR>
+// if it moves forwards, backwards, left or right<BR>
+Add this above it:<BR>
+// if carrying an object hold out arms<BR>
+if (liftedObjNum != -1)<BR>
+{<BR>
+   // left upper arm<BR>
+   character_TRANS[3*9+0] = run1_TRANS[3*9+0];<BR>
+   character_TRANS[3*9+1] = run1_TRANS[3*9+1];<BR>
+   character_TRANS[3*9+2] = run1_TRANS[3*9+2];<BR>
+   character_TRANS[3*9+3] = run1_TRANS[3*9+3];<BR>
+   character_TRANS[3*9+4] = run1_TRANS[3*9+4]-1.0;<BR>
+   <BR>
+   // left lower arm<BR>
+   character_TRANS[9*9+0] = run1_TRANS[9*9+0];<BR>
+   character_TRANS[9*9+1] = run1_TRANS[9*9+1];<BR>
+   character_TRANS[9*9+2] = run1_TRANS[9*9+2];<BR>
+   character_TRANS[9*9+3] = run1_TRANS[9*9+3];<BR>
+   character_TRANS[9*9+4] = run1_TRANS[9*9+4]-1.0;<BR>
+   character_TRANS[9*9+5] = run1_TRANS[9*9+5]-1.4;<BR>
+   <BR>
+   // right upper arm<BR>
+   character_TRANS[8*9+0] = run3_TRANS[8*9+0];<BR>
+   character_TRANS[8*9+1] = run3_TRANS[8*9+1];<BR>
+   character_TRANS[8*9+2] = run3_TRANS[8*9+2];<BR>
+   character_TRANS[8*9+3] = run3_TRANS[8*9+3];<BR>
+   character_TRANS[8*9+4] = run3_TRANS[8*9+4]-1.0;<BR>
+   <BR>
+   // right lower arm<BR>
+   character_TRANS[4*9+0] = run3_TRANS[4*9+0];<BR>
+   character_TRANS[4*9+1] = run3_TRANS[4*9+1];<BR>
+   character_TRANS[4*9+2] = run3_TRANS[4*9+2];<BR>
+   character_TRANS[4*9+3] = run3_TRANS[4*9+3];<BR>
+   character_TRANS[4*9+4] = run3_TRANS[4*9+4]-1.0;<BR>
+   character_TRANS[4*9+5] = run3_TRANS[4*9+5]-1.4;<BR>
+}<BR>
+<BR>
+Compile and run...<BR>
+<BR>
+<HR><HR>
+<BR>
+</BODY>
+</HTML>

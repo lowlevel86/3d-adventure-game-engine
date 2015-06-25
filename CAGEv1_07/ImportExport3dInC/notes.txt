@@ -1,0 +1,9 @@
+"c_export.py" and c_import.py are python scripts for blender that will allow you to export and import c source code. Put the script where your python scripts are for blender.
+
+Maybe for Linux:
+/usr/share/blender/scripts/blender
+
+Maybe for Windows:
+C:\Program Files\Blender Foundation\Blender\x.x\scripts
+
+Place the scripts in the correct directory then start blender and go to the "Scripts Window", click "Scripts" then "Update Menus".

@@ -1,0 +1,399 @@
+<HTML>
+<HEAD>
+<TITLE>Little HowTos</TITLE>
+</HEAD>
+<BODY>
+
+The best way to learn is by doing...<BR>
+<BR>
+<HR>
+Low-level HowTos
+<HR><HR>
+-Get and Color Pixels-<BR>
+This will get the color of a pixel at the mouse's position and display it in a box on the bottom left of the screen. Make sure not to draw outside of memory.<BR>
+In scene1.c<BR>
+At the very end of the file type:<BR>
+<BR>
+int pixel;<BR>
+pixel = rI.scrnBuff[(int)xMousePos][(int)yMousePos];<BR>
+<BR>
+for (y = 0; y < rI.yWin/4; y++)<BR>
+for (x = 0; x < rI.xWin/4; x++)<BR>
+rI.scrnBuff[x][y] = pixel;<BR>
+<BR>
+<HR>
+<BR>
+-Draw a 3d Line-<BR>
+This will draw a blue line.<BR>
+In scene1.c<BR>
+At the very end of the file type:<BR>
+<BR>
+line(0, 0, 0, 200, 100, -1000, 0xFF0000, rI);<BR>
+<BR>
+To draw a line with fog:<Br>
+fLine(0, 0, 0, 200, 100, -1000, 0xFF0000, bgColor, rI);<BR>
+<BR>
+To draw a line with antialiasing:<Br>
+aLine(0, 0, 0, 200, 100, -1000, 0xFF0000, rI);<BR>
+<BR>
+To draw a line with antialiasing and fog:<Br>
+afLine(0, 0, 0, 200, 100, -1000, 0xFF0000, bgColor, rI);<BR>
+<BR>
+<HR>
+<BR>
+-Rotate a Point-<BR>
+This will rotate a blue line a 180 around the z axis.<BR>
+In scene1.c<BR>
+At the very end of the file type:<BR>
+<BR>
+float xLine, yLine, zLine;<BR>
+xLine = 200; yLine = 100; zLine = -1000;<BR>
+rotatePoint(&xLine, &yLine, &zLine, 0, 0, 0, 0, 0, M_PI);<BR>
+line(0, 0, 0, xLine, yLine, zLine, 0xFF0000, rI);<BR>
+<BR>
+<HR><HR>
+<BR>
+<HR>
+Rotation and Mesh Manipulation Howto<BR>
+<HR><HR>
+In scene1.c<BR>
+<BR>
+-Methods of Rotating-<BR>
+First make sure the camera angle doesn't change.<BR>
+Find "// angle the camera to normal position" and replace:<BR>
+if (xScreenRot > -1.3)<BR>
+xScreenRot = xScreenRot - 0.1;<BR>
+With:<BR>
+//if (xScreenRot > -1.3)<BR>
+//xScreenRot = xScreenRot - 0.1;<BR>
+<BR>
+Now we will insert a function that will allow us to rotate a mesh with the mouse.<BR>
+Find "// return global and transformation data back to its original state" and just before that paste:<BR>
+globalRotRelToScrn(character_STATICGLOBAL, character_STATICTRANS, character_MESHCNT,<BR>
+0, 0, 0, xDragLgth/50, yDragLgth/50, 0);<BR>
+Compile and run...<BR>
+<BR>
+Here is the function:<BR>
+globalRotRelToScrn(mesh_GLOBAL, mesh_TRANS, mesh_MESHCNT,<BR>
+xCenter, yCenter, zCenter, lr, tb, cc)<BR>
+It can rotate the whole mesh from left to right, right to left, top down, bottom up, or clockwise, counterclockwise.<BR>
+<BR>
+Now try this function:<BR>
+globalRot(character_STATICGLOBAL, character_STATICTRANS, character_MESHCNT,<BR>
+0, 0, 0, xDragLgth/50, yDragLgth/50, 0);<BR>
+Compile and run...<BR>
+<BR>
+globalRot(mesh_GLOBAL, mesh_TRANS, mesh_MESHCNT,<BR>
+xCenter, yCenter, zCenter, xAxis, yAxis, zAxis)<BR>
+Unlike globalRotRelToScrn this function will rotate the mesh around its x axis first then the y and z axises in serial rather than all at once.<BR>
+<BR>
+Here's a function that will rotate only part of a mesh:<BR>
+localRotRelToScrn(character_STATICTRANS, 2,<BR>
+0, 0, 0, xDragLgth/50, yDragLgth/50, 0);<BR>
+It should rotate the head of the character mesh.<BR>
+Compile and run...<BR>
+<BR>
+Some other functions:<BR>
+<BR>
+localRot(mesh_TRANS, transformation data block location,<BR>
+xCenter, yCenter, zCenter, xAxis, yAxis, zAxis)<BR>
+<BR>
+globalMove(mesh_GLOBAL, mesh_TRANS, mesh_MESHCNT, xMove, yMove, zMove)<BR>
+<BR>
+localMove(mesh_TRANS, transformation data block location, xMove, yMove, zMove)<BR>
+<BR>
+globalResize(mesh_GLOBAL, mesh_TRANS, mesh_MESHCNT,<BR>
+xCenter, yCenter, zCenter, xSize, ySize, zSize)<BR>
+<BR>
+localResize(mesh_TRANS, transformation data block location,<BR>
+xCenter, yCenter, zCenter, xSize, ySize, zSize)<BR>
+<BR>
+<HR><HR>
+<BR>
+<HR>
+Cheat Codes<BR>
+<HR><HR>
+In scene1.c<BR>
+<BR>
+-Mini Dome-<BR>
+Find "// resize the dome" and replace:<BR>
+globalResize(dome1_GLOBAL, dome1_TRANS, dome1_MESHCNT, 0, 0, 0, 1000, 1000, 100);<BR>
+With:<BR>
+globalResize(dome1_GLOBAL, dome1_TRANS, dome1_MESHCNT, 0, 0, 0, 2, 2, 2);<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Mini Course-<BR>
+Find "// resize the course" and replace:<BR>
+globalResize(course1_GLOBAL, course1_TRANS, course1_MESHCNT, 0, 0, 0, 20, 20, 20);<BR>
+With:<BR>
+globalResize(course1_GLOBAL, course1_TRANS, course1_MESHCNT, 0, 0, 0, 5, 5, 5);<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Fast Moving Clouds-<BR>
+Find "// rotate the sky and apply the correct rotation to the dome" and replace:<BR>
+zDomeRotSave = fmod(zDomeRotSave + 0.002, M_PI * 2);<BR>
+With:<BR>
+zDomeRotSave = fmod(zDomeRotSave + 0.2, M_PI * 2);<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Flawless Victory-<BR>
+Find "// rotate the character while falling" and replace:<BR>
+xCharacterRot = xCharacterRot + 0.2;<BR>
+zCharacterRot = zCharacterRot + 0.1;<BR>
+With:<BR>
+static float separate = 0;<BR>
+static float run1_STATICTRANS[sizeof(character_TRANS)/sizeof(float)];<BR>
+for (i = 0; i < character_MESHCNT; i++)<BR>
+{<BR>
+if (!separate)<BR>
+{<BR>
+run1_STATICTRANS[0+i*9] = run1_TRANS[0+i*9];<BR>
+run1_STATICTRANS[5+i*9] = run1_TRANS[5+i*9];<BR>
+}<BR>
+run1_TRANS[0+i*9] = separate*(1+i);<BR>
+run1_TRANS[5+i*9] = separate*(1+i);<BR>
+}<BR>
+separate = separate + 2;<BR>
+<BR>
+Find "// if the character falls past a certain point reset the game" and replace:<BR>
+if (course2_TRANS[5] > 5000)<BR>
+{<BR>
+With:<BR>
+if (course1_TRANS[5] > 50000)<BR>
+{<BR>
+separate = 0;<BR>
+for (i = 0; i < character_MESHCNT; i++)<BR>
+{<BR>
+run1_TRANS[0+i*9] = run1_STATICTRANS[0+i*9];<BR>
+run1_TRANS[5+i*9] = run1_STATICTRANS[5+i*9];<BR>
+}<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Luigi Jump-<BR>
+Find "// jump with legs apart" and remove:<BR>
+if ((allowFlyUp) || (timeToFall))<BR>
+{<BR>
+for (i = 0; i < character_MESHCNT*9; i++)<BR>
+character_TRANS[i] = run1_TRANS[i];<BR>
+runCharacter = 0;<BR>
+}<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Spin-<BR>
+Find "// turn the character toward the correct direction" and replace:<BR>
+zCharacterRot = zCharacterRot + turnRight + turnLeft;<BR>
+With:<BR>
+zCharacterRot = zCharacterRot + turnRight*-8 + turnLeft*-8;<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Moon Jump-<BR>
+Find "// make the character fall by moving the course up" and replace:<BR>
+fallSpeed = fallSpeed + 15;<BR>
+With:<BR>
+fallSpeed = fallSpeed + 5;<BR>
+<BR>
+Find "// make the character jump on key down if ready" and replace:<BR>
+flyUpHeight = 140;<BR>
+With:<BR>
+flyUpHeight = 240;<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Float-<BR>
+Find "// make the character fall by moving the course up" and replace:<BR>
+fallSpeed = fallSpeed + 15;<BR>
+With:<BR>
+if (!jumpUp)<BR>
+fallSpeed = fallSpeed + 12;<BR>
+else<BR>
+fallSpeed = 2;<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Under View-<BR>
+Find "// angle the camera to normal position" and replace:<BR>
+if (xScreenRot > -1.3)<BR>
+With:<BR>
+if (xScreenRot > -1.8)<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Night Time-<BR>
+Find "// color background" and replace:<BR>
+bgColor = 0xFFFFFF;<BR>
+With:<BR>
+bgColor = 0x555555;<BR>
+Compile and run...<BR>
+<BR>
+<HR><HR>
+<BR>
+<HR>
+Changing and Adding Meshes<BR>
+<HR><HR>
+In scene1.c<BR>
+<BR>
+-Add Another Platform To The Course-<BR>
+<BR>
+You will need "blender" (3d modelling software).
+Also make sure you have placed the python files, which you will find in the "ImportExport3dInC" folder of the game engine, in the correct blender directory.<BR>
+If you run blender and go to "File" then "Import" you should see "C code (.c)...".<BR>
+<BR>
+Now run blender and press "A" a couple of times, this should unhighlight and highlight all the objects in the 3d window.<BR>
+Press "X" and click "Erase Selected Object(s)".<BR>
+Make sure you are in object mode and not edit mode. To change between object and edit mode press "Tab".<BR>
+<BR>
+After erasing all objects go to "File", "Import" then "C code (.c)..." and import "course1Poly.c" not "course1.c".<BR>
+"course1Poly.c" is in a polygon format and "course1.c" is in a vector format and the import script will only understand the polygon format.<BR>
+<BR>
+Note: Use the middle mouse botton to navigate. Click to move the cursor and press "C" to move the window where the cursor is.<BR>
+<BR>
+Once "course1Poly.c" has been imported right click on some piece of the course. Hold "Ctrl" and press "D". This should duplicate the selected piece. Move it to some other place and left click to place it. If you want to move it again press "G". To move it to a specific location press "N" to bring up the "Transform Properties" window and change the location values. (you can also change the scale)<BR>
+<BR>
+Note: Do not change the rotation of a platform. The code in "scene1.c" calculates the platform's surface by using the object's scale relative to its center and ignores the rotation.<BR>
+<BR>
+Export the new course back to "course1Poly.c" by going to "File", "Export" then "C code (.c)...".<BR>
+Copy "course1Poly.c" and "course1Poly.h" to "course1.c" and "course1.h".<BR>
+Run "polyToLine" which is in the meshes directory to convert the polygon info within "course1.c" to vectors (It doesn't have to be converted but this makes it nicer). Drag and drop "course1.c" into the program. Press "N" to change the name to course1, Press "C" to convert and "W" to write to files.<BR>
+<BR>
+Compile and run...<BR>
+<BR>
+<HR>
+<BR>
+-Adding A New Model-<BR>
+<BR>
+You will need "blender" (3d modelling software).
+Also make sure you have placed the python files, which you will find in the "ImportExport3dInC" folder of the game engine, in the correct blender directory.<BR>
+If you run blender and go to "File" then "Import" you should see "C code (.c)...".<BR>
+<BR>
+Now run blender and press "A" a couple of times, this should unhighlight and highlight all the objects in the 3d window.<BR>
+Press "X" and click "Erase Selected Object(s)".<BR>
+Make sure you are in object mode and not edit mode. To change between object and edit mode press "Tab".<BR>
+<BR>
+Move the cursor to the center. Go to "View" then "View Properties..." to open the View Properties window and change the 3d cursor to position 0,0,0.<BR>
+Add a mesh by going to "Add", "Mesh" then "Monkey".<BR>
+Go to "File", "Export" then "C code (.c)..." and export the model as "monkey.c" into the "meshes" directory.<BR>
+<BR>
+Resize the mesh from monkey.c.<BR>
+Open "monkey.c".<BR>
+Find "//transformation data" and replace:<BR>
+1.000000, 1.000000, 1.000000,<BR>
+With:<BR>
+100.000000, 100.000000, 100.000000,<BR>
+<BR>
+Add monkey.c to the makefile...<BR>
+<BR>
+<B>For Windows:</B><BR>
+Double click game Dev-C++ Project File and add the files "monkey.c" and "monkey.h" to the project.<BR>
+<BR>
+<B>For Linux:</B><BR>
+Open "Makefile".<BR>
+Add this near the bottom of the makefile:<BR>
+meshes/monkey.o: meshes/monkey.c<BR>
+//TAB// $(CC) -c meshes/monkey.c -o meshes/monkey.o $(CFLAGS)<BR>
+<BR>
+Replace //TAB// with a tab.<BR>
+<BR>
+Add this to "OBJ =" within the makefile:<BR>
+meshes/monkey.o<BR>
+<BR>
+<BR>
+Add monkey.c to the source code...<BR>
+<BR>
+Add this near the top of main.c:<BR>
+#include "meshes/monkey.h"<BR>
+<BR>
+Open "scene1.c".<BR>
+Add this under "if (initializeDrawScene1) {":<BR>
+globalRot(monkey_GLOBAL, monkey_TRANS, monkey_MESHCNT, 0, 0, 0, M_PI/2, 0, 0);//to rotate upright<BR>
+for (i = 0; i &lt; 9; i++)<BR>
+monkey_STATICGLOBAL[i] = monkey_GLOBAL[i];<BR>
+for (i = 0; i &lt; sizeof(monkey_TRANS)/sizeof(float); i++)<BR>
+monkey_STATICTRANS[i] = monkey_TRANS[i];<BR>
+for (i = 0; i &lt; sizeof(monkey_POINT)/sizeof(float); i++)<BR>
+monkey_STATICPOINT[i] = monkey_POINT[i];<BR>
+<BR>
+Add this at the end of "scene1.c":<BR>
+// draw monkey<BR>
+addRotLocSz(monkey_TRANS, monkey_POINT, monkey_POINTDATSZ,<BR>
+monkey_STATICPOINT, monkey_MESHCNT);<BR>
+addScreenRotLocSz(xScreenRot, yScreenRot, zScreenRot,<BR>
+xScreenSize, yScreenSize, zScreenSize,<BR>
+xScreenLoc, yScreenLoc, zScreenLoc,<BR>
+monkey_POINT, monkey_POINTDATSZ, monkey_MESHCNT);<BR>
+drawMesh(monkey_POINT, monkey_LINE, monkey_COLOR,<BR>
+monkey_LINEDATSZ, monkey_MESHCNT, bgColor, antialiasing, rI);<BR>
+<BR>
+Compile and run...<BR>
+<BR>
+To place the monkey model somewhere in the environment.<BR>
+<BR>
+Find this in "scene1.c":<BR>
+// return global and transformation data back to its original state<BR>
+// this will keep rounding errors from deforming the meshes<BR>
+Add this right after:<BR>
+for (i = 0; i &lt; 9; i++)<BR>
+monkey_GLOBAL[i] = monkey_STATICGLOBAL[i];<BR>
+for (i = 0; i &lt; sizeof(monkey_TRANS)/sizeof(float); i++)<BR>
+monkey_TRANS[i] = monkey_STATICTRANS[i];<BR>
+<BR>
+Add this right after "// apply the correct orientations":<BR>
+// put the monkey in the right position<BR>
+monkey_TRANS[3] = -300;<BR>
+monkey_TRANS[4] = 800.0;<BR>
+// keep the monkey with the course<BR>
+globalRot(monkey_GLOBAL, monkey_TRANS, monkey_MESHCNT, 0, 0, 0, 0, 0, zCourseRotSave);<BR>
+globalMove(monkey_GLOBAL, monkey_TRANS, monkey_MESHCNT,<BR>
+-xCharacterPosSave, -yCharacterPosSave, -zCharacterPosSave);<BR>
+globalMove(monkey_GLOBAL, monkey_TRANS, monkey_MESHCNT, 0, -(forward+backward), 0);<BR>
+globalRot(monkey_GLOBAL, monkey_TRANS, monkey_MESHCNT, 0, 0, 0, 0, 0, (turnLeft+turnRight));<BR>
+<BR>
+Find:<BR>
+// If the character falls or jumps this changes the z<BR>
+// position of the course and if you have objects placed on<BR>
+// the course this is the place to change the z positions<BR>
+// of those objects to keep them with the course.<BR>
+Add this right after:<BR>
+// put the monkey at the right height<BR>
+monkey_TRANS[5] = 100.0;<BR>
+<BR>
+Compile and run...<BR>
+<BR>
+<HR><HR>
+<BR>
+<HR>
+Menu Howto<BR>
+<HR><HR>
+I will add this just for the heck of it.<BR>
+<BR>
+In scene0.c<BR>
+<BR>
+Find:<BR>
+drawAscII("ZOOM CAMERA = PAGEUP,PAGEDOWN", 10*rI.xWin/400, 10*rI.xWin/400,
+             15-rI.xCenter, -55+rI.yCenter, 0, 0, 0, 0, 0x0, bgColor, 1, rI);<BR>
+Add this right after:<BR>
+drawAscII("This is how to add menu text", 10*rI.xWin/400, 10*rI.xWin/400,
+             15-rI.xCenter, -75+rI.yCenter, 0, 0, 0, 0, 0x0, bgColor, 1, rI);<BR>
+<BR>
+Compile and run...<BR>
+<BR>
+Now at the game menu go to "VIEW CONTROLS" and you should see "This is how to add menu text".<BR>
+<BR>
+<HR><HR>
+<BR>
+</BODY>
+</HTML>

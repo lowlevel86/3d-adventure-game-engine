@@ -1,0 +1,90 @@
+# Project: game
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = game_private.res
+OBJ  = transform.o drawMesh.o main.o setDisplay.o meshes/character.o meshes/course1.o meshes/course2.o meshes/dome1.o meshes/dome2.o meshes/run.o meshes/shadow.o meshes/spikeBall.o renderer/rotate2.o renderer/addRotLocSz.o renderer/addRotLocSz2.o renderer/line.o renderer/line2.o renderer/rotate.o drawAscII.o meshes/ascII.o $(RES)
+LINKOBJ  = transform.o drawMesh.o main.o setDisplay.o meshes/character.o meshes/course1.o meshes/course2.o meshes/dome1.o meshes/dome2.o meshes/run.o meshes/shadow.o meshes/spikeBall.o renderer/rotate2.o renderer/addRotLocSz.o renderer/addRotLocSz2.o renderer/line.o renderer/line2.o renderer/rotate.o drawAscII.o meshes/ascII.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -l vfw32 -l user32 -l gdi32 -l comctl32 -l AVICAP32 -mwindows  
+INCS =  -I"C:/Dev-Cpp/include" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
+BIN  = game.exe
+CXXFLAGS = $(CXXINCS)  
+CFLAGS = $(INCS)  
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before game.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o "game.exe" $(LIBS)
+
+transform.o: transform.c
+	$(CC) -c transform.c -o transform.o $(CFLAGS)
+
+drawMesh.o: drawMesh.c
+	$(CC) -c drawMesh.c -o drawMesh.o $(CFLAGS)
+
+main.o: main.c
+	$(CC) -c main.c -o main.o $(CFLAGS)
+
+setDisplay.o: setDisplay.c
+	$(CC) -c setDisplay.c -o setDisplay.o $(CFLAGS)
+
+meshes/character.o: meshes/character.c
+	$(CC) -c meshes/character.c -o meshes/character.o $(CFLAGS)
+
+meshes/course1.o: meshes/course1.c
+	$(CC) -c meshes/course1.c -o meshes/course1.o $(CFLAGS)
+
+meshes/course2.o: meshes/course2.c
+	$(CC) -c meshes/course2.c -o meshes/course2.o $(CFLAGS)
+
+meshes/dome1.o: meshes/dome1.c
+	$(CC) -c meshes/dome1.c -o meshes/dome1.o $(CFLAGS)
+
+meshes/dome2.o: meshes/dome2.c
+	$(CC) -c meshes/dome2.c -o meshes/dome2.o $(CFLAGS)
+
+meshes/run.o: meshes/run.c
+	$(CC) -c meshes/run.c -o meshes/run.o $(CFLAGS)
+
+meshes/shadow.o: meshes/shadow.c
+	$(CC) -c meshes/shadow.c -o meshes/shadow.o $(CFLAGS)
+
+meshes/spikeBall.o: meshes/spikeBall.c
+	$(CC) -c meshes/spikeBall.c -o meshes/spikeBall.o $(CFLAGS)
+
+renderer/rotate2.o: renderer/rotate2.c
+	$(CC) -c renderer/rotate2.c -o renderer/rotate2.o $(CFLAGS)
+
+renderer/addRotLocSz.o: renderer/addRotLocSz.c
+	$(CC) -c renderer/addRotLocSz.c -o renderer/addRotLocSz.o $(CFLAGS)
+
+renderer/addRotLocSz2.o: renderer/addRotLocSz2.c
+	$(CC) -c renderer/addRotLocSz2.c -o renderer/addRotLocSz2.o $(CFLAGS)
+
+renderer/line.o: renderer/line.c
+	$(CC) -c renderer/line.c -o renderer/line.o $(CFLAGS)
+
+renderer/line2.o: renderer/line2.c
+	$(CC) -c renderer/line2.c -o renderer/line2.o $(CFLAGS)
+
+renderer/rotate.o: renderer/rotate.c
+	$(CC) -c renderer/rotate.c -o renderer/rotate.o $(CFLAGS)
+
+drawAscII.o: drawAscII.c
+	$(CC) -c drawAscII.c -o drawAscII.o $(CFLAGS)
+
+meshes/ascII.o: meshes/ascII.c
+	$(CC) -c meshes/ascII.c -o meshes/ascII.o $(CFLAGS)
+
+game_private.res: game_private.rc rsrc.rc 
+	$(WINDRES) -i game_private.rc --input-format=rc -o game_private.res -O coff 

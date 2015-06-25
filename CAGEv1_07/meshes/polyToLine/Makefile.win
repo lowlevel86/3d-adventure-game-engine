@@ -1,0 +1,78 @@
+# Project: polyToLine
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = polyToLine_private.res
+OBJ  = findStrInStr.o main.o polyToLine.o prtCCode.o readModelData.o rmCComments.o dataView/dataView.o dataView/asciiSM.o editMode/editMode.o helpWnd/helpWnd.o nameWnd/nameWnd.o renderer/rotate2.o renderer/addRotLocSz.o renderer/line.o renderer/line2.o renderer/rotate.o $(RES)
+LINKOBJ  = findStrInStr.o main.o polyToLine.o prtCCode.o readModelData.o rmCComments.o dataView/dataView.o dataView/asciiSM.o editMode/editMode.o helpWnd/helpWnd.o nameWnd/nameWnd.o renderer/rotate2.o renderer/addRotLocSz.o renderer/line.o renderer/line2.o renderer/rotate.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -l vfw32 -l user32 -l gdi32 -l comctl32 -l AVICAP32 -mwindows  
+INCS =  -I"C:/Dev-Cpp/include" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
+BIN  = polyToLine.exe
+CXXFLAGS = $(CXXINCS)  
+CFLAGS = $(INCS)  
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before polyToLine.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o "polyToLine.exe" $(LIBS)
+
+findStrInStr.o: findStrInStr.c
+	$(CC) -c findStrInStr.c -o findStrInStr.o $(CFLAGS)
+
+main.o: main.c
+	$(CC) -c main.c -o main.o $(CFLAGS)
+
+polyToLine.o: polyToLine.c
+	$(CC) -c polyToLine.c -o polyToLine.o $(CFLAGS)
+
+prtCCode.o: prtCCode.c
+	$(CC) -c prtCCode.c -o prtCCode.o $(CFLAGS)
+
+readModelData.o: readModelData.c
+	$(CC) -c readModelData.c -o readModelData.o $(CFLAGS)
+
+rmCComments.o: rmCComments.c
+	$(CC) -c rmCComments.c -o rmCComments.o $(CFLAGS)
+
+dataView/dataView.o: dataView/dataView.c
+	$(CC) -c dataView/dataView.c -o dataView/dataView.o $(CFLAGS)
+
+dataView/asciiSM.o: dataView/asciiSM.c
+	$(CC) -c dataView/asciiSM.c -o dataView/asciiSM.o $(CFLAGS)
+
+editMode/editMode.o: editMode/editMode.c
+	$(CC) -c editMode/editMode.c -o editMode/editMode.o $(CFLAGS)
+
+helpWnd/helpWnd.o: helpWnd/helpWnd.c
+	$(CC) -c helpWnd/helpWnd.c -o helpWnd/helpWnd.o $(CFLAGS)
+
+nameWnd/nameWnd.o: nameWnd/nameWnd.c
+	$(CC) -c nameWnd/nameWnd.c -o nameWnd/nameWnd.o $(CFLAGS)
+
+renderer/rotate2.o: renderer/rotate2.c
+	$(CC) -c renderer/rotate2.c -o renderer/rotate2.o $(CFLAGS)
+
+renderer/addRotLocSz.o: renderer/addRotLocSz.c
+	$(CC) -c renderer/addRotLocSz.c -o renderer/addRotLocSz.o $(CFLAGS)
+
+renderer/line.o: renderer/line.c
+	$(CC) -c renderer/line.c -o renderer/line.o $(CFLAGS)
+
+renderer/line2.o: renderer/line2.c
+	$(CC) -c renderer/line2.c -o renderer/line2.o $(CFLAGS)
+
+renderer/rotate.o: renderer/rotate.c
+	$(CC) -c renderer/rotate.c -o renderer/rotate.o $(CFLAGS)
+
+polyToLine_private.res: polyToLine_private.rc rsrc.rc 
+	$(WINDRES) -i polyToLine_private.rc --input-format=rc -o polyToLine_private.res -O coff 
